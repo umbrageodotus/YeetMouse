@@ -33,7 +33,7 @@ let
       pkgs.glfw3
     ];
 
-    makeFlags = kernel.module.makeFlags ++ [
+    makeFlags = kernel.moduleMakeFlags ++ [
       "KBUILD_OUTPUT=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
       "-C"
       "${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
