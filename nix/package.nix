@@ -39,6 +39,7 @@ let
       "${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
       "M=$(sourceRoot)/driver"
       "-d"
+      "—warn-undefined-variables"
     ];
 
     preBuild = ''
