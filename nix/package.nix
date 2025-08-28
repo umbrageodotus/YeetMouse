@@ -22,7 +22,7 @@ let
       fileset = ./..;
     };
 
-    setSourceRoot = "export sourceRoot=${src.name}/source";
+    sourceRoot = "${src.name}/source";
     nativeBuildInputs = with pkgs; kernel.moduleBuildDependencies ++ [
       makeWrapper
       autoPatchelfHook
