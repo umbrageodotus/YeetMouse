@@ -1,9 +1,7 @@
 { shortRev ? "dev" }:
 pkgs @ {
   lib,
-  bash,
   stdenv,
-  coreutils,
   writeShellScript,
   makeDesktopItem,
   kernel ? pkgs.linuxPackages.kernel,
