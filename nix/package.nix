@@ -22,7 +22,7 @@ let
       fileset = ./..;
     };
 
-    sourceRoot = "${src.name}/source";
+    sourceRoot = "${src.path}/source";
     nativeBuildInputs = with pkgs; kernel.moduleBuildDependencies ++ [
       makeWrapper
       autoPatchelfHook
@@ -37,7 +37,7 @@ let
       "KBUILD_OUTPUT=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
       "-C"
       "${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
-      "M=${src.name}/source/driver"
+      "M=${src.path}/source/driver"
     ];
 
     preBuild = ''
