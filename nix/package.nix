@@ -7,6 +7,7 @@ pkgs @ {
   writeShellScript,
   makeDesktopItem,
   kernel ? pkgs.linuxPackages.kernel,
+  kernelModuleMakeFlags,
   ...
 }:
 
@@ -22,7 +23,7 @@ let
       fileset = ./..;
     };
 
-    sourceRoot = "${./..}";
+    setSourceRoot = "export sourceRoot=$(pwd)/source";
     nativeBuildInputs = with pkgs; kernel.moduleBuildDependencies ++ [
       makeWrapper
       autoPatchelfHook
@@ -33,11 +34,11 @@ let
       pkgs.glfw3
     ];
 
-    makeFlags = kernel.makeFlags ++ [
+    makeFlags = kernelModuleMakeFlags ++ [
       "KBUILD_OUTPUT=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
       "-C"
       "${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
-      "M=${./..}/driver"
+      "M=$(sourceRoot)/driver"
     ];
 
     preBuild = ''
