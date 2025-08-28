@@ -37,9 +37,7 @@ let
       "KBUILD_OUTPUT=${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
       "-C"
       "${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
-      "M=$(sourceRoot)/driver"
-      "-d"
-      "—warn-undefined-variables"
+      "M=(sourceRoot)/driver"
     ];
 
     preBuild = ''
