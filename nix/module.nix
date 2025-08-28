@@ -7,7 +7,6 @@ let
 
   degToRad = x: x * 0.017453292;
   floatRange = lower: upper: types.addCheck types.float (x: x >= lower && x <= upper);
-      apply = x: if x != null then x else 0.0;
 
   parameterBasePath = "/sys/module/yeetmouse/parameters";
 
