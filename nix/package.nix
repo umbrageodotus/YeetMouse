@@ -21,7 +21,7 @@ let
       fileset = ./..;
     };
 
-    setSourceRoot = "export sourceRoot=$(pwd)/source";
+    sourceRoot = "${src}";
     nativeBuildInputs = with pkgs; kernel.moduleBuildDependencies ++ [
       makeWrapper
       autoPatchelfHook
@@ -35,7 +35,7 @@ let
     makeFlags = kernelModuleMakeFlags ++ [
       "-C"
       "${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
-      "M=${../driver}"
+      "M=${src}/driver"
     ];
 
     preBuild = ''
@@ -45,13 +45,13 @@ let
     LD_LIBRARY_PATH = "/run/opengl-driver/lib:${lib.makeLibraryPath buildInputs}";
 
     postBuild = ''
-      make "-j$NIX_BUILD_CORES" -C $sourceRoot/gui "M=$sourceRoot/gui" "LIBS=-lglfw -lGL"
+      make "-j$NIX_BUILD_CORES" -C ${src}/gui "M=$sourceRoot/gui" "LIBS=-lglfw -lGL"
     '';
 
     postInstall = let
       PATH = [ pkgs.zenity ];
     in /*sh*/''
-      install -Dm755 $sourceRoot/gui/YeetMouseGui $out/bin/yeetmouse
+      install -Dm755 ${src}/gui/YeetMouseGui $out/bin/yeetmouse
       wrapProgram $out/bin/yeetmouse \
         --prefix PATH : ${lib.makeBinPath PATH}
     '';
