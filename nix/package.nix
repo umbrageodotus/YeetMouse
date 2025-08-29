@@ -5,7 +5,7 @@ pkgs @ {
   writeShellScript,
   makeDesktopItem,
   kernel ? pkgs.linuxPackages.kernel,
-  kernelModuleMakeFlags,
+  kernelModuleMakeFlags ? pkgs.linuxPackages.kernelModuleMakeFlags,
   ...
 }:
 
@@ -33,8 +33,6 @@ let
     ];
 
     makeFlags = kernelModuleMakeFlags ++ [
-      "-C"
-      "${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
       "M=$(sourceRoot)/driver"
     ];
 
