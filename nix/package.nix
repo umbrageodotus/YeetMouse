@@ -32,7 +32,11 @@ let
       pkgs.glfw3
     ];
 
-    makeFlags = kernelModuleMakeFlags;
+    makeFlags = kernelModuleMakeFlags ++ [
+      "-C"
+      "${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
+      "M=$(sourceRoot)/driver"
+    ];
 
     preBuild = ''
       cp $sourceRoot/driver/config.sample.h $sourceRoot/driver/config.h
