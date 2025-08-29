@@ -5,7 +5,7 @@ pkgs @ {
   writeShellScript,
   makeDesktopItem,
   kernel ? pkgs.linuxPackages.kernel,
-  kernelModuleMakeFlags ? pkgs.linuxPackages.kernelModuleMakeFlags,
+  kernelModuleMakeFlags ? pkgs.linuxPackages.kernel,
   ...
 }:
 
@@ -32,14 +32,10 @@ let
       pkgs.glfw3
     ];
 
-    makeFlags = kernelModuleMakeFlags ++ [
-      "-C"
-      "${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
-    ];
+    makeFlags = kernelModuleMakeFlags;
 
     preBuild = ''
       cp $sourceRoot/driver/config.sample.h $sourceRoot/driver/config.h
-      export KBUILD_EXTMOD="$sourceRoot/driver"
     '';
 
     LD_LIBRARY_PATH = "/run/opengl-driver/lib:${lib.makeLibraryPath buildInputs}";
