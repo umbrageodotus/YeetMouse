@@ -5,7 +5,7 @@ pkgs @ {
   writeShellScript,
   makeDesktopItem,
   kernel ? pkgs.linuxPackages.kernel,
-  kernelModuleMakeFlags ? pkgs.linuxPackages.kernel,
+  kernelModuleMakeFlags ? pkgs.linuxPackages.kernelModuleMakeFlags,
   ...
 }:
 
