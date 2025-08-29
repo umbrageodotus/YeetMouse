@@ -33,6 +33,8 @@ let
     ];
 
     makeFlags = kernelModuleMakeFlags ++ [
+      "-C"
+      "${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
       "M=$(sourceRoot)/driver"
     ];
 
