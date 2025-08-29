@@ -35,7 +35,7 @@ let
     makeFlags = kernelModuleMakeFlags ++ [
       "-C"
       "${kernel.dev}/lib/modules/${kernel.modDirVersion}/build"
-      "M=${../source}/driver"
+      "M=${../driver}"
     ];
 
     preBuild = ''
