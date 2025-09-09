@@ -1,13 +1,12 @@
 { shortRev ? "dev" }:
 pkgs @ {
-  boot,
   lib,
   bash,
   coreutils,
   writeShellScript,
   makeDesktopItem,
-  kernel ? boot.kernelPackages,
-  kernelModuleMakeFlags ? boot.kernelPackages.kernelModuleMakeFlags,
+  kernel ? pkgs.linuxPackages.kernel,
+  kernelModuleMakeFlags ? pkgs.linuxPackages.kernelModuleMakeFlags,
   ...
 }:
 
