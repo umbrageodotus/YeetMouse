@@ -22,6 +22,7 @@ let
       root = ./..;
       fileset = ./..;
     };
+    stdenv = kernel.stdenv;
 
     setSourceRoot = "export sourceRoot=$(pwd)/source";
     nativeBuildInputs = with pkgs; kernel.moduleBuildDependencies ++ [
