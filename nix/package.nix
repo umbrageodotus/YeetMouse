@@ -2,7 +2,6 @@
 pkgs @ {
   lib,
   bash,
-  stdenv,
   coreutils,
   writeShellScript,
   makeDesktopItem,
@@ -15,14 +14,13 @@ let
   mkPackage = overrides @ {
     kernel,
     ...
-  }: (stdenv.mkDerivation rec {
+  }: (kernel.stdenv.mkDerivation rec {
     pname = "yeetmouse";
     version = shortRev;
     src = lib.fileset.toSource {
       root = ./..;
       fileset = ./..;
     };
-    stdenv = kernel.stdenv;
 
     setSourceRoot = "export sourceRoot=$(pwd)/source";
     nativeBuildInputs = with pkgs; kernel.moduleBuildDependencies ++ [
@@ -31,7 +29,7 @@ let
       copyDesktopItems
     ];
     buildInputs = [
-      stdenv.cc.cc.lib
+      kernel.stdenv.cc.cc.lib
       pkgs.glfw3
     ];
 
