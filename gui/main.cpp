@@ -136,11 +136,12 @@ int OnGui() {
 
     /* ---------------------------- LEFT MODES WINDOW ---------------------------- */
     ImGui::SetNextWindowSizeConstraints({220, 0}, {FLT_MAX, FLT_MAX});
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {12, 12});
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {12, 12});
     ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
     if (ImGui::BeginChild("Modes", ImVec2(220, 0), ImGuiChildFlags_FrameStyle)) {
         ImGui::PopStyleColor();
+        ImGui::Spacing();
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {12, 12});
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {12, 12});
         ImGui::SeparatorText("Mode Selection");
         for (int i = 1; i < NUM_MODES; i++) {
             const char *accel = AccelModes[i];
@@ -149,21 +150,22 @@ int OnGui() {
             if (ImGui::IsItemHovered())
                 hovered_mode = i;
         }
+        ImGui::PopStyleVar(2);
     } else
         ImGui::PopStyleColor();
     ImGui::EndChild();
-    ImGui::PopStyleVar(2);
 
     ImGui::SameLine();
 
     /* ---------------------------- MIDDLE PARAMETERS WINDOW ---------------------------- */
     ImGui::SetNextWindowSizeConstraints({220, -1}, {420, FLT_MAX});
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {10, 10});
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {10, 10});
     ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
     if (ImGui::BeginChild("Parameters", ImVec2(220, -1), ImGuiChildFlags_FrameStyle | ImGuiChildFlags_ResizeX)) {
         auto avail = ImGui::GetContentRegionAvail();
         ImGui::PopStyleColor();
+        ImGui::Spacing();
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, {10, 10});
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, {10, 10});
         ImGui::SeparatorText("Parameters");
         ImGui::PushItemWidth(avail.x);
 
@@ -195,7 +197,7 @@ int OnGui() {
         bool pre_scale_change = ImGui::SliderFloat("##PreScale_Param", &params[selected_mode].preScale, 0.01, 10, "Pre-Scale %0.2f");
 #endif
         if (pre_scale_change) {
-            PLOT_X_RANGE = 150 / params[selected_mode].preScale;
+            PLOT_X_RANGE = PLOT_X_DEFAULT_RANGE / params[selected_mode].preScale;
             for (int i = 1; i < NUM_MODES; i++) {
                 functions[i] = CachedFunction(((float) PLOT_X_RANGE) / PLOT_POINTS, &params[i]);
                 functions[i].PreCacheFunc();
@@ -501,10 +503,10 @@ int OnGui() {
             functions[selected_mode].PreCacheFunc();
 
         ImGui::PopItemWidth();
+        ImGui::PopStyleVar(2);
     } else
         ImGui::PopStyleColor();
     ImGui::EndChild();
-    ImGui::PopStyleVar(2);
 
     ImGui::SameLine();
 
@@ -521,9 +523,9 @@ int OnGui() {
         ImGui::PopStyleColor();
         ImGui::PushItemWidth(avail.x);
 #ifdef USE_INPUT_DRAG
-        ImGui::DragFloat("##MouseSmoothness", &mouse_smooth, 0.001, 0.0, 0.99, "Mouse Smoothness %0.2f");
+        ImGui::DragFloat("##MouseSmoothness", &mouse_smooth, 0.001, 0.0, 0.99, "Graph Mouse Speed Smoothness %0.2f");
 #else
-        ImGui::SliderFloat("##MouseSmoothness", &mouse_smooth, 0.0, 0.99, "Mouse Speed Smoothness %0.2f");
+        ImGui::SliderFloat("##MouseSmoothness", &mouse_smooth, 0.0, 0.99, "Graph Mouse Speed Smoothness %0.2f");
 #endif
         ImGui::SetItemTooltip("Smooths out the mouse movement indicator (The small orange dot on the graph)");
         ImGui::PopItemWidth();
@@ -1029,12 +1031,17 @@ int OnGui() {
                              functions[selected_mode].x_stride);
         }
 
-        ImPlot::PlotScatterG("Mouse Speed", [](int idx, void *data) { return *(ImPlotPoint *) data; }, &mousePoint_main,
+        ImPlot::SetNextMarkerStyle(IMPLOT_AUTO, IMPLOT_AUTO,
+                                   ImVec4(200 / 255.f, 140 / 255.f, 110 / 255.f, 1), 2,
+                                   ImVec4(200 / 255.f, 140 / 255.f, 110 / 255.f, 1));
+        ImPlot::PlotScatterG("Mouse Speed", [](int idx, void *data) { return *static_cast<ImPlotPoint *>(data); },
+                             &mousePoint_main,
                              1);
-        ImPlot::SetNextMarkerStyle(IMPLOT_AUTO, IMPLOT_AUTO /* * !is_record_old*/,
+
+        ImPlot::SetNextMarkerStyle(IMPLOT_AUTO, IMPLOT_AUTO,
                                    ImVec4(180 / 255.f, 70 / 255.f, 80 / 255.f, 1), 2,
                                    ImVec4(180 / 255.f, 70 / 255.f, 80 / 255.f, 1));
-        ImPlot::PlotScatterG("Mouse Top Speed", [](int idx, void *data) { return *(ImPlotPoint *) data; },
+        ImPlot::PlotScatterG("Mouse Top Speed", [](int idx, void *data) { return *static_cast<ImPlotPoint *>(data); },
                              &mousePoint_topSpeed, 1);
 
         ImPlot::SetNextLineStyle(IMPLOT_AUTO_COL, 2);

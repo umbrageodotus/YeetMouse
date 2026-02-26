@@ -210,33 +210,32 @@ int accelerate(int *x, int *y)
     // Editor node: I have no idea, what this line above really does, but commenting it out solves all my problems
     // with incorrect data. It seems that it tries to fix a problem that doesn't exist, or doesn't exist on my
     // specific setup (PC / System / Mice)
-    if(ms > FP64_100) ms = FP64_100;
+    if (ms > FP64_100) ms = FP64_100;
 
     //if(ms > 100) ms = 100;      //Original InterAccel has 200 here. RawAccel rounds to 100. So do we.
     last_ms = ms;
 
-    //Update acceleration parameters periodically
+    // Update acceleration parameters periodically
     update_params(now);
 
     // Apply Pre-Scale
-    if(g_PreScale != FP64_1){
+    if (g_PreScale != FP64_1) {
         delta_x = FP64_Mul(delta_x, g_PreScale);
         delta_y = FP64_Mul(delta_y, g_PreScale);
     }
-    
-    //Calculate velocity (one step before rate, which divides rate by the last frametime)
-    speed = FP64_Sqrt(FP64_Add(FP64_Mul(delta_x, delta_x), FP64_Mul(delta_y, delta_y)));
 
-    //Apply speedcap
-    if(g_InputCap > 0){
+    // Calculate velocity
+    speed = FP64_Sqrt(FP64_Add(FP64_Mul(delta_x, delta_x), FP64_Mul(delta_y, delta_y)));
+    speed = FP64_DivPrecise(speed, ms);
+
+    // Apply speedcap
+    if (g_InputCap > 0) {
         //if(speed >= g_InputCap) {
-        if(FP64_Sub(speed, g_InputCap) > 0) {
+        if (FP64_Sub(speed, g_InputCap) > 0) {
             speed = g_InputCap;
         }
     }
 
-    //Calculate rate from traveled overall distance and add possible rate offsets
-    speed = FP64_DivPrecise(speed, ms);
     speed = FP64_Sub(speed, g_Offset);
 
     static_assert(AccelMode_Count == 10, "Wrong AccelMode count!");

@@ -5,7 +5,8 @@
 #include "DriverHelper.h"
 
 #define PLOT_POINTS (512)
-inline float PLOT_X_RANGE (150);
+#define PLOT_X_DEFAULT_RANGE 80
+inline float PLOT_X_RANGE (PLOT_X_DEFAULT_RANGE);
 
 #define LERP(a,b,x)     (((b) - (a)) * (x) + (a))
 
