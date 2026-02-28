@@ -464,6 +464,7 @@ let
 
   yeetmouse = pkgs.yeetmouse.override {
     kernel = config.boot.kernelPackages.kernel;
+    kernelModuleMakeFlags = config.boot.kernelPackages.kernelModuleMakeFlags;
   };
 in {
   options.hardware.yeetmouse = {
@@ -586,7 +587,6 @@ in {
     nixpkgs.overlays = [ yeetmouseOverlay ];
 
     boot.extraModulePackages = [ yeetmouse ];
-    environment.systemPackages = [ yeetmouse ];
     services.udev = {
       extraRules = let
         echo = "${pkgs.coreutils}/bin/echo";
