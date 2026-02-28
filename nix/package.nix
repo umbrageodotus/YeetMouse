@@ -23,7 +23,6 @@ let
     nativeBuildInputs = with pkgs; kernel.moduleBuildDependencies ++ [
       makeWrapper
       autoPatchelfHook
-      copyDesktopItems
     ];
     buildInputs = [
       kernel.stdenv.cc.cc.lib
@@ -53,4 +52,4 @@ let
     in
     origRes // { override = newArgs: f (origArgs // newArgs); };
 in
-  makeOverridable mkPackage { inherit kernel; }
+  makeOverridable mkPackage { inherit kernel kernelModuleMakeFlags; }
