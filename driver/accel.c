@@ -238,6 +238,13 @@ int accelerate(int *x, int *y)
 
     speed = FP64_Sub(speed, g_Offset);
 
+    // Apply Rotation before everything else to keep the precision
+    if(g_RotationAngle != 0) {
+        FP_LONG new_delta_x = FP64_Mul(delta_x, modesConst.cos_a) - FP64_Mul(delta_y, modesConst.sin_a);
+        delta_y = FP64_Mul(delta_x, modesConst.sin_a) + FP64_Mul(delta_y, modesConst.cos_a);
+        delta_x = new_delta_x;
+    }
+
     static_assert(AccelMode_Count == 10, "Wrong AccelMode count!");
     // Apply acceleration if movement is over offset
     if (speed > 0) {
@@ -325,13 +332,6 @@ int accelerate(int *x, int *y)
 
     // I don't do wheel, sorry
     //delta_whl *= g_ScrollsPerTick/3.0f;
-
-    // Apply Rotation after everything else to keep the precision
-    if(g_RotationAngle != 0) {
-        FP_LONG new_delta_x = FP64_Mul(delta_x, modesConst.cos_a) - FP64_Mul(delta_y, modesConst.sin_a);
-        delta_y = FP64_Mul(delta_x, modesConst.sin_a) + FP64_Mul(delta_y, modesConst.cos_a);
-        delta_x = new_delta_x;
-    }
 
     //Cast back to int
     *x = FP64_RoundToInt(delta_x);
