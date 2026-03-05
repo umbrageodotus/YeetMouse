@@ -306,7 +306,7 @@ int OnGui() {
                 change |= ImGui::DragFloat("##Accel_Param", &params[selected_mode].accel, 0.01, 0.01, 10,
                                            "Acceleration %0.2f");
                 change |= ImGui::DragFloat("##MidPoint_Param", &params[selected_mode].midpoint, 0.05, 0.1, 50,
-                                           "Start %0.2f");
+                                           "Midpoint %0.2f");
 #else
                 change |= ImGui::SliderFloat("##Accel_Param", &params[selected_mode].accel, 0.01, 10,
                                              "Acceleration %0.2f");
@@ -342,7 +342,7 @@ int OnGui() {
                 change |= ImGui::DragFloat("##Accel_Param", &params[selected_mode].accel, 0.005, 0.001, 5,
                                            "Decay Rate %0.3f");
                 change |= ImGui::DragFloat("##MidPoint_Param", &params[selected_mode].midpoint, 0.1, 0.05, 50,
-                                           "Start %0.2f");
+                                           "Midpoint %0.2f");
                 change |= ImGui::DragFloat("##Exp_Param", &params[selected_mode].exponent, 0.01, 0.01, 8,
                            "Limit %0.2f");
 #else
@@ -364,7 +364,7 @@ int OnGui() {
                 change |= ImGui::DragFloat("##Accel_Param", &params[selected_mode].accel, 0.01, 0, 10,
                                            "Acceleration %0.2f");
                 change |= ImGui::DragFloat("##MidPoint_Param", &params[selected_mode].midpoint, 0.05, 0.1, 50,
-                                           "Start %0.2f");
+                                           "Midpoint %0.2f");
                 change |= ImGui::DragFloat("##Exp_Param", &params[selected_mode].exponent, 0.0, 0.01, 1,
                                            "Smoothness %0.2f");
 #else

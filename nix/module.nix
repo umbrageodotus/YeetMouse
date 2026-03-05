@@ -217,7 +217,7 @@ let
             apply = toString;
             description = "Motivity acceleration dividend";
           };
-          start = mkOption {
+          midpoint = mkOption {
             type = floatRange 0.1 50.0;
             default = 10.0;
             apply = toString;
@@ -235,7 +235,7 @@ let
           param = "Acceleration";
         }
         {
-          value = toString params.start;
+          value = toString params.midpoint;
           param = "Midpoint";
         }
       ];
@@ -325,7 +325,7 @@ let
             default = 0;
             description = "Natural acceleration mid-point";
           };
-          exponent = mkOption {
+          limit = mkOption {
             type = floatRange 0.001 8.0;
             default = 2;
             description = "Natural acceleration limit (smoothness of the applied output curve)";
@@ -352,7 +352,7 @@ let
           param = "Midpoint";
         }
         {
-          value = toString params.exponent;
+          value = toString params.limit;
           param = "Exponent";
         }
         {
@@ -498,7 +498,7 @@ in {
           param = "Sensitivity";
         }
         {
-          value = if isAttrs sens then toString sens.y else toString sens;
+          value = if isAttrs sens then toString sens.y else "1";
           param = "SensitivityY";
         }
       ];
