@@ -52,7 +52,7 @@ struct ModesConstants {
     FP_LONG as_half_threshold;
 };
 
-extern FP_LONG g_Sensitivity, g_SensitivityY, g_OutputCap, g_InputCap, g_Offset, g_PreScale, g_Acceleration, g_Exponent,
+extern FP_LONG g_Sensitivity, g_RatioYX, g_OutputCap, g_InputCap, g_Offset, g_PreScale, g_Acceleration, g_Exponent,
         g_Midpoint, g_Motivity, g_RotationAngle, g_AngleSnap_Angle, g_AngleSnap_Threshold, g_LutData_x[], g_LutData_y[];
 extern char g_AccelerationMode, g_UseSmoothing;
 extern unsigned long g_LutSize;

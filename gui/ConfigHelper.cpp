@@ -52,7 +52,7 @@ namespace ConfigHelper {
 
         try {
             res_ss << "sens=" << params.sens << std::endl;
-            res_ss << "sens_Y=" << (params.use_anisotropy ? params.sensY : 1) << std::endl;
+            res_ss << "ratioYX=" << (params.useAnisotropy ? params.ratioYX : 1) << std::endl;
             res_ss << "outCap=" << params.outCap << std::endl;
             res_ss << "inCap=" << params.inCap << std::endl;
             res_ss << "offset=" << params.offset << std::endl;
@@ -64,10 +64,10 @@ namespace ConfigHelper {
             res_ss << "accelMode=" << AccelMode2EnumString(params.accelMode) << std::endl;
             res_ss << "useSmoothing=" << params.useSmoothing << std::endl;
             res_ss << "rotation=" << params.rotation << std::endl;
-            res_ss << "as_threshold=" << params.as_threshold << std::endl;
-            res_ss << "as_angle=" << params.as_angle << std::endl;
-            res_ss << "LUT_size=" << params.LUT_size << std::endl;
-            res_ss << "LUT_data=" << DriverHelper::EncodeLutData(params.LUT_data_x, params.LUT_data_y, params.LUT_size, true) << std::endl;
+            res_ss << "as_threshold=" << params.asThreshold << std::endl;
+            res_ss << "as_angle=" << params.asAngle << std::endl;
+            res_ss << "LUT_size=" << params.lutSize << std::endl;
+            res_ss << "LUT_data=" << DriverHelper::EncodeLutData(params.lutDataX, params.lutDataY, params.lutSize, true) << std::endl;
             res_ss << "CC_data_aggregate=" << params.customCurve.ExportCustomCurve();
 
             if (save_to_file) {
@@ -98,7 +98,7 @@ namespace ConfigHelper {
             std::stringstream res_ss;
 
             res_ss << "#define SENSITIVITY " << params.sens << std::endl;
-            res_ss << "#define SENSITIVITY_Y " << (params.use_anisotropy ? params.sensY : 1) << std::endl;
+            res_ss << "#define RATIO_YX " << (params.useAnisotropy ? params.ratioYX : 1) << std::endl;
             res_ss << "#define OUTPUT_CAP " << params.outCap << std::endl;
             res_ss << "#define INPUT_CAP " << params.inCap << std::endl;
             res_ss << "#define OFFSET " << params.offset << std::endl;
@@ -110,11 +110,11 @@ namespace ConfigHelper {
             res_ss << "#define ACCELERATION_MODE " << AccelMode2EnumString(params.accelMode) << std::endl;
             res_ss << "#define USE_SMOOTHING " << params.useSmoothing << std::endl;
             res_ss << "#define ROTATION_ANGLE " << (params.rotation * DEG2RAD) << std::endl;
-            res_ss << "#define ANGLE_SNAPPING_THRESHOLD " << (params.as_threshold * DEG2RAD) << std::endl;
-            res_ss << "#define ANGLE_SNAPPING_ANGLE " << (params.as_angle * DEG2RAD) << std::endl;
-            res_ss << "#define LUT_SIZE " << params.LUT_size << std::endl;
+            res_ss << "#define ANGLE_SNAPPING_THRESHOLD " << (params.asThreshold * DEG2RAD) << std::endl;
+            res_ss << "#define ANGLE_SNAPPING_ANGLE " << (params.asAngle * DEG2RAD) << std::endl;
+            res_ss << "#define LUT_SIZE " << params.lutSize << std::endl;
             res_ss << "#define LUT_DATA " << DriverHelper::EncodeLutData(
-                params.LUT_data_x, params.LUT_data_y, params.LUT_size, false) << std::endl;
+                params.lutDataX, params.lutDataY, params.lutSize, false) << std::endl;
             res_ss << "#define CC_DATA_AGGREGATE " << params.customCurve.ExportCustomCurve();
 
             if (save_to_file) {
@@ -198,8 +198,8 @@ namespace ConfigHelper {
 
             if (name == "sens" || name == "sensitivity")
                 params.sens = val;
-            else if (name == "sens_y" || name == "sensitivity_y") {
-                params.sensY = val;
+            else if (name == "ratio_yx" || name == "ratioyx" || name == "sens_y" || name == "sensitivity_y") {
+                params.ratioYX = val;
             } else if (name == "outcap" || name == "output_cap")
                 params.outCap = val;
             else if (name == "incap" || name == "input_cap")
@@ -233,15 +233,15 @@ namespace ConfigHelper {
             else if (name == "rotation" || name == "rotation_angle")
                 params.rotation = val / (is_config_h ? DEG2RAD : 1);
             else if (name == "as_threshold" || name == "angle_snapping_threshold")
-                params.as_threshold = val / (is_config_h ? DEG2RAD : 1);
+                params.asThreshold = val / (is_config_h ? DEG2RAD : 1);
             else if (name == "as_angle" || name == "angle_snapping_angle")
-                params.as_angle = val / (is_config_h ? DEG2RAD : 1);
+                params.asAngle = val / (is_config_h ? DEG2RAD : 1);
             else if (name == "lut_size")
-                params.LUT_size = val;
+                params.lutSize = val;
             else if (name == "lut_data") {
                 strcpy(lut_data, val_str.c_str());
-                params.LUT_size = DriverHelper::ParseUserLutData(lut_data, params.LUT_data_x, params.LUT_data_y,
-                                                                 params.LUT_size);
+                params.lutSize = DriverHelper::ParseUserLutData(lut_data, params.lutDataX, params.lutDataY,
+                                                                 params.lutSize);
                 //DriverHelper::ParseDriverLutData(lut_data, params.LUT_data_x, params.LUT_data_y);
             } else if (name == "cc_data_aggregate") {
                 params.customCurve.ImportCustomCurve(val_str);
@@ -251,7 +251,7 @@ namespace ConfigHelper {
             idx++;
         }
 
-        params.use_anisotropy = params.sensY != 1;
+        params.useAnisotropy = params.ratioYX != 1;
 
         if ((idx < 14 && unknown_params > 3) || unknown_params == idx) {
             printf("Bad config format, missing parameters\n");

@@ -12,6 +12,10 @@
 #define SENSITIVITY_Y 1.0
 #endif
 
-#ifndef SENSITIVITY_Y
-#define SENSITIVITY_Y 1
+#ifndef RATIO_YX
+#ifdef SENSITIVITY_Y
+#define RATIO_YX ((float)SENSITIVITY_Y / SENSITIVITY)
+#else
+#define RATIO_YX 1
+#endif
 #endif

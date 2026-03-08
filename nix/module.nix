@@ -482,9 +482,10 @@ in {
             type = sensitivityValue;
             description = "Horizontal sensitivity";
           };
-          y = mkOption {
+          ratioYX = mkOption {
             type = sensitivityValue;
-            description = "Vertical sensitivity";
+            default = 1.0;
+            description = "Ratio of vertical to horizontal sensitivity (Y/X)";
           };
         };
       };
@@ -492,16 +493,20 @@ in {
       type = types.either sensitivityValue anisotropyValue;
       default = 1.0;
       description = "Mouse base sensitivity";
-      apply = sens: [
-        {
-          value = if isAttrs sens then toString sens.x else toString sens;
-          param = "Sensitivity";
-        }
-        {
-          value = if isAttrs sens then toString sens.y else "1";
-          param = "SensitivityY";
-        }
-      ];
+      apply = sens:
+        let
+          sensX = if isAttrs sens then sens.x else sens;
+          ratio = if isAttrs sens then sens.ratioYX else 1;
+        in [
+          {
+            param = "Sensitivity";
+            value = toString sensX;
+          }
+          {
+            param = "RatioYX";
+            value = toString ratio;
+          }
+        ];
     };
 
     inputCap = mkOption {

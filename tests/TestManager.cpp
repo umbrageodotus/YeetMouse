@@ -4,7 +4,7 @@
 #include "driver/accel_modes.h"
 
 // "Private" values only visible to the accel_modes
-FP_LONG g_Sensitivity = FP64_1, g_SensitivityY = FP64_1, g_OutputCap = 0, g_InputCap = 0, g_Offset = 0, g_PreScale = FP64_1, g_Acceleration = 0, g_Exponent
+FP_LONG g_Sensitivity = FP64_1, g_RatioYX = FP64_1, g_OutputCap = 0, g_InputCap = 0, g_Offset = 0, g_PreScale = FP64_1, g_Acceleration = 0, g_Exponent
                 = 0, g_Midpoint = 0, g_Motivity = 0, g_RotationAngle = 0, g_AngleSnap_Angle = 0, g_AngleSnap_Threshold =
                 0, g_LutData_x[256], g_LutData_y[256];
 char g_AccelerationMode = 0, g_UseSmoothing = 0;
@@ -15,7 +15,7 @@ static CachedFunction function;
 // Ignores speedY (for now?)
 FP_LONG ApplyGlobalPostParameters(FP_LONG speed) {
     FP_LONG speed_Y = FP64_1;
-    if (g_SensitivityY == FP64_1) {
+    if (g_RatioYX == FP64_1) {
         if(g_Sensitivity != FP64_1)
             speed = FP64_Mul(speed, g_Sensitivity);
 
@@ -24,7 +24,7 @@ FP_LONG ApplyGlobalPostParameters(FP_LONG speed) {
             speed = FP64_Min(g_OutputCap, speed);
     } else {
         speed = FP64_Mul(speed, g_Sensitivity);
-        speed_Y = FP64_Mul(speed, g_SensitivityY);
+        speed_Y = FP64_Mul(speed, g_RatioYX);
 
         // Apply Output Limit
         if(g_OutputCap > 0) {
@@ -48,7 +48,7 @@ FP_LONG ApplyGlobalPreParameters(FP_LONG speed) {
 void TestManager::Initialize() {
     function.params = new Parameters;
     function.params->sens = FP64_ToFloat(g_Sensitivity);
-    function.params->sensY = FP64_ToFloat(g_SensitivityY);
+    function.params->ratioYX = FP64_ToFloat(g_RatioYX);
     function.params->accelMode = static_cast<AccelMode>(g_AccelerationMode);
     function.params->preScale = FP64_ToFloat(g_PreScale);
     function.params->accel = FP64_ToFloat(g_Acceleration);
@@ -57,8 +57,8 @@ void TestManager::Initialize() {
     function.params->offset = FP64_ToFloat(g_Offset);
     function.params->useSmoothing = g_UseSmoothing;
     function.params->rotation = FP64_ToFloat(g_RotationAngle);
-    function.params->as_angle = FP64_ToFloat(g_AngleSnap_Angle);
-    function.params->as_threshold = FP64_ToFloat(g_AngleSnap_Threshold);
+    function.params->asAngle = FP64_ToFloat(g_AngleSnap_Angle);
+    function.params->asThreshold = FP64_ToFloat(g_AngleSnap_Threshold);
     function.params->inCap = 0;
     function.params->outCap = 0;
     function.PreCacheConstants();
@@ -279,8 +279,8 @@ void TestManager::SetSensitivity(FP_LONG sensitivity) {
 }
 
 void TestManager::SetSensitivityY(FP_LONG sensitivityY) {
-    g_SensitivityY = sensitivityY;
-    function.params->sensY = FP64_ToFloat(sensitivityY);
+    g_RatioYX = sensitivityY;
+    function.params->ratioYX = FP64_ToFloat(sensitivityY);
 }
 
 void TestManager::SetOutCap(FP_LONG outCap) {
@@ -310,12 +310,12 @@ void TestManager::SetRotationAngle(FP_LONG rotationAngle) {
 
 void TestManager::SetAngleSnap_Angle(FP_LONG angleSnap_Angle) {
     g_AngleSnap_Angle = angleSnap_Angle;
-    function.params->as_angle = FP64_ToFloat(g_AngleSnap_Angle);
+    function.params->asAngle = FP64_ToFloat(g_AngleSnap_Angle);
 }
 
 void TestManager::SetAngleSnap_Threshold(FP_LONG angleSnap_Threshold) {
     g_AngleSnap_Threshold = angleSnap_Threshold;
-    function.params->as_threshold = FP64_ToFloat(g_AngleSnap_Threshold);
+    function.params->asThreshold = FP64_ToFloat(g_AngleSnap_Threshold);
 }
 
 void TestManager::SetUseSmoothing(bool useSmoothing) {
@@ -325,7 +325,7 @@ void TestManager::SetUseSmoothing(bool useSmoothing) {
 
 void TestManager::SetLutSize(unsigned long lutSize) {
     g_LutSize = lutSize;
-    function.params->LUT_size = g_LutSize;
+    function.params->lutSize = g_LutSize;
 }
 
 void TestManager::SetLutData_x(FP_LONG values[], unsigned long count) {
@@ -333,7 +333,7 @@ void TestManager::SetLutData_x(FP_LONG values[], unsigned long count) {
 
     for (unsigned long i = 0; i < count; i++) {
         g_LutData_x[i] = values[i];
-        function.params->LUT_data_x[i] = FP64_ToFloat(values[i]);
+        function.params->lutDataX[i] = FP64_ToFloat(values[i]);
     }
 }
 
@@ -342,7 +342,7 @@ void TestManager::SetLutData_y(FP_LONG values[], unsigned long count) {
 
     for (unsigned long i = 0; i < count; i++) {
         g_LutData_y[i] = values[i];
-        function.params->LUT_data_y[i] = FP64_ToFloat(values[i]);
+        function.params->lutDataY[i] = FP64_ToFloat(values[i]);
     }
 }
 

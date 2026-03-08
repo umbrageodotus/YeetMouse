@@ -54,7 +54,7 @@ PARAM(AccelerationMode, ACCELERATION_MODE,  "Sets the algorithm to be used for a
 // Acceleration parameters (type pchar. Converted to float via "update_params" triggered by /sys/module/yeetmouse/parameters/update)
 PARAM_F(InputCap,       INPUT_CAP,          "Limit the maximum pointer speed before applying acceleration.");
 PARAM_F(Sensitivity,    SENSITIVITY,        "Mouse base sensitivity, or X axis sensitivity if the anisotropy is on."); // Sensitivity for X axis only if sens != sens_y (anisotropy is on), otherwise sensitivity for both axes
-PARAM_F(SensitivityY,   SENSITIVITY_Y,      "Mouse base sensitivity on the Y axis."); // Used only when anisotropy is on
+PARAM_F(RatioYX,        RATIO_YX,           "Mouse base sensitivity on the Y axis."); // Used only when anisotropy is on
 PARAM_F(OutputCap,      OUTPUT_CAP,         "Cap maximum sensitivity.");
 PARAM_F(Offset,         OFFSET,             "Mouse acceleration shift.");
 PARAM_F(PreScale,       PRESCALE,           "Parameter to adjust for the DPI");
@@ -117,7 +117,7 @@ INLINE void update_params(ktime_t now)
 
     PARAM_UPDATE(InputCap);
     PARAM_UPDATE(Sensitivity);
-    PARAM_UPDATE(SensitivityY);
+    PARAM_UPDATE(RatioYX);
     PARAM_UPDATE(Acceleration);
     PARAM_UPDATE(OutputCap);
     PARAM_UPDATE(Offset);
@@ -283,7 +283,7 @@ int accelerate(int *x, int *y)
 
     // Actually apply accelerated sensitivity, allow post-scaling and apply carry from previous round
     // Like RawAccel, sensitivity will be a final multiplier:
-    if (g_SensitivityY == FP64_1) {
+    if (g_RatioYX == FP64_1) {
         if(g_Sensitivity != FP64_1)
             speed = FP64_Mul(speed, g_Sensitivity);
 
@@ -296,7 +296,7 @@ int accelerate(int *x, int *y)
         delta_y = FP64_Mul(delta_y, speed);
     } else {
         speed = FP64_Mul(speed, g_Sensitivity);
-        FP_LONG speed_Y = FP64_Mul(speed, g_SensitivityY);
+        FP_LONG speed_Y = FP64_Mul(speed, g_RatioYX);
 
         // Apply Output Limit
         if(g_OutputCap > 0) {

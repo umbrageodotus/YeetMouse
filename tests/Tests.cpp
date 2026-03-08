@@ -15,7 +15,7 @@ void Tests::Initialize() {
     // for (int mode = 1; mode < AccelMode_Count; mode++) {
     //     auto* params = new Parameters;
     //     params->sens = 1;
-    //     params->sensY = 1;
+    //     params->ratioYX = 1;
     //     params->preScale = 1;
     //     params->accelMode = static_cast<AccelMode>(mode);
     //     functions[mode] = CachedFunction(0.1, params);

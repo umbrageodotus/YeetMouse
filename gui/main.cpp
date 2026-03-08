@@ -113,8 +113,8 @@ int OnGui() {
                         if (imported_params.customCurve.points.size() <= 1)
                             params[i].customCurve = curve;
 
-                        params[i].LUT_size = params[i].customCurve.ExportCurveToLUT(
-                            params[i].LUT_data_x, params[i].LUT_data_y);
+                        params[i].lutSize = params[i].customCurve.ExportCurveToLUT(
+                            params[i].lutDataX, params[i].lutDataY);
                         params[i].customCurve.ApplyCurveConstraints();
                         params[i].customCurve.UpdateLUT();
                     } else
@@ -171,14 +171,14 @@ int OnGui() {
 
         bool change = false;
 
-        change |= ImGui::Checkbox("Use anisotropy", &params[selected_mode].use_anisotropy);
+        change |= ImGui::Checkbox("Use anisotropy", &params[selected_mode].useAnisotropy);
         ImGui::SetItemTooltip("Separate X/Y sensitivity values");
 
         // Display Global Parameters First
 #ifdef USE_INPUT_DRAG
-        if (params[selected_mode].use_anisotropy) {
+        if (params[selected_mode].useAnisotropy) {
             change |= ImGui::DragFloat("##Sens_Param", &params[selected_mode].sens, 0.01, 0.005, 5, "Sensitivity X %.3f");
-            change |= ImGui::DragFloat("##SensY_Param", &params[selected_mode].sensY, 0.01, 0.005, 5, "Sensitivity Y %.3f");
+            change |= ImGui::DragFloat("##RatioYX_Param", &params[selected_mode].ratioYX, 0.01, 0.005, 5, "Ratio Y/X %.3f");
         } else
             change |= ImGui::DragFloat("##Sens_Param", &params[selected_mode].sens, 0.01, 0.005, 5, "Sensitivity %.3f");
         change |= ImGui::DragFloat("##OutCap_Param", &params[selected_mode].outCap, 0.05, 0, 100, "Output Cap. %0.2f");
@@ -186,9 +186,9 @@ int OnGui() {
         change |= ImGui::DragFloat("##Offset_Param", &params[selected_mode].offset, 0.05, -50, 50, "Offset %0.2f");
         bool pre_scale_change = ImGui::DragFloat("##PreScale_Param", &params[selected_mode].preScale, 0.01, 0.01, 10, "Pre-Scale %0.2f");
 #else
-        if (params[selected_mode].use_anisotropy) {
+        if (params[selected_mode].useAnisotropy) {
             change |= ImGui::SliderFloat("##Sens_Param", &params[selected_mode].sens, 0.005, 5, "Sensitivity X %.3f");
-            change |= ImGui::SliderFloat("##SensY_Param", &params[selected_mode].sensY, 0.005, 5, "Sensitivity Y %.3f");
+            change |= ImGui::SliderFloat("##RatioYX_Param", &params[selected_mode].ratioYX, 0.005, 5, "Ratio Y/X %.3f");
         } else
             change |= ImGui::SliderFloat("##Sens_Param", &params[selected_mode].sens, 0.005, 5, "Sensitivity %.3f");
         change |= ImGui::SliderFloat("##OutCap_Param", &params[selected_mode].outCap, 0, 5, "Output Cap. %0.2f");
@@ -391,10 +391,10 @@ int OnGui() {
                     change = true;
 
                     // Needs to be converted to int, because the kernel parameters don't deal too well with unsigned long longs
-                    params[selected_mode].LUT_size = DriverHelper::ParseUserLutData(LUT_user_data,
-                        params[selected_mode].LUT_data_x,
-                        params[selected_mode].LUT_data_y,
-                        std::size(params[selected_mode].LUT_data_x));
+                    params[selected_mode].lutSize = DriverHelper::ParseUserLutData(LUT_user_data,
+                        params[selected_mode].lutDataX,
+                        params[selected_mode].lutDataY,
+                        std::size(params[selected_mode].lutDataX));
                 }
                 break;
             case AccelMode_CustomCurve: {
@@ -475,8 +475,8 @@ int OnGui() {
 
                 if (change) {
                     params[selected_mode].customCurve.ApplyCurveConstraints();
-                    params[selected_mode].LUT_size = params[selected_mode].customCurve.ExportCurveToLUT(
-                        params[selected_mode].LUT_data_x, params[selected_mode].LUT_data_y);
+                    params[selected_mode].lutSize = params[selected_mode].customCurve.ExportCurveToLUT(
+                        params[selected_mode].lutDataX, params[selected_mode].lutDataY);
                     params[selected_mode].customCurve.UpdateLUT();
                 }
 
@@ -490,13 +490,13 @@ int OnGui() {
         ImGui::PopID();
 
         ImGui::SeparatorText("Rotation");
-        change |= ImGui::SliderFloat("##Adv_AS_Threshold", &params[selected_mode].as_threshold, 0, 179.99,
+        change |= ImGui::SliderFloat("##Adv_AS_Threshold", &params[selected_mode].asThreshold, 0, 179.99,
                                      u8"Snapping Threshold %0.2f°");
-        change |= ImGui::SliderFloat("##Adv_AS_Angle", &params[selected_mode].as_angle, 0, 179.99,
+        change |= ImGui::SliderFloat("##Adv_AS_Angle", &params[selected_mode].asAngle, 0, 179.99,
                                      u8"Snapping Angle %0.2f°");
         change |= ImGui::SliderFloat("##Adv_Rotation", &params[selected_mode].rotation, -180, 180,
                                      u8"Rotation Angle %0.2f°");
-        if (params[selected_mode].as_threshold > 0)
+        if (params[selected_mode].asThreshold > 0)
             ImGui::SetItemTooltip("Rotation is applied after Angle Snapping");
 
         if (change)
@@ -983,8 +983,8 @@ int OnGui() {
 
             if (modified) {
                 params[selected_mode].customCurve.ApplyCurveConstraints();
-                params[selected_mode].LUT_size = params[selected_mode].customCurve.ExportCurveToLUT(
-                    params[selected_mode].LUT_data_x, params[selected_mode].LUT_data_y);
+                params[selected_mode].lutSize = params[selected_mode].customCurve.ExportCurveToLUT(
+                    params[selected_mode].lutDataX, params[selected_mode].lutDataY);
                 params[selected_mode].customCurve.UpdateLUT();
                 functions[selected_mode].PreCacheFunc();
             }
@@ -1000,12 +1000,12 @@ int OnGui() {
                     // Draw LUT points
                     ImPlot::PlotScatterG("LUT points", [](int idx, void *ud) {
                         auto params = static_cast<Parameters *>(ud);
-                        double x = params->LUT_data_x[idx] / params->preScale;
-                        double y = params->LUT_data_y[idx];
+                        double x = params->lutDataX[idx] / params->preScale;
+                        double y = params->lutDataY[idx];
                         return ImPlotPoint(x, y);
-                    }, &params[selected_mode], params[selected_mode].LUT_size);
+                    }, &params[selected_mode], params[selected_mode].lutSize);
 
-                    if (params[selected_mode].use_anisotropy) {
+                    if (params[selected_mode].useAnisotropy) {
                         ImPlot::SetNextLineStyle(ImVec4(0.3, 0.3, 0.8, 1), 1);
                         ImPlot::PlotLine("Active Mode Y##ActivePlotY", functions[selected_mode].values_y, PLOT_POINTS,
                                          functions[selected_mode].x_stride);
@@ -1021,7 +1021,7 @@ int OnGui() {
 
             last_held_point = held_point;
         } else {
-            if (params[selected_mode].use_anisotropy) {
+            if (params[selected_mode].useAnisotropy) {
                 ImPlot::SetNextLineStyle(ImVec4(0.3, 0.3, 0.8, 1), 2);
                 ImPlot::PlotLine("Active Mode Y##ActivePlotY", functions[selected_mode].values_y, PLOT_POINTS,
                                  functions[selected_mode].x_stride);
@@ -1077,7 +1077,7 @@ int OnGui() {
         // Disable Apply button for 1.1 second after clicking it (this is a driver "limitation")
         ImGui::BeginDisabled(!has_privilege || !was_initialized ||
                              duration_cast<milliseconds>(steady_clock::now() - last_apply_clicked).count() < 1100 ||
-                             (selected_mode == AccelMode_Lut /* LUT */ && params[selected_mode].LUT_size == 0) ||
+                             (selected_mode == AccelMode_Lut /* LUT */ && params[selected_mode].lutSize == 0) ||
                              !functions[selected_mode].isValid);
 
         if (ImGui::Button("Apply", {-1, -1})) {
@@ -1123,10 +1123,10 @@ void ResetParameters(void) {
         params[mode].accelMode = static_cast<AccelMode>(mode == 0 ? used_mode : mode);
 
         if (mode == AccelMode_Lut) {
-            memcpy(params[mode].LUT_data_x, start_params.LUT_data_x,
-                   start_params.LUT_size * sizeof(params[selected_mode].LUT_data_x[0]));
-            memcpy(params[mode].LUT_data_y, start_params.LUT_data_y,
-                   start_params.LUT_size * sizeof(params[selected_mode].LUT_data_y[0]));
+            memcpy(params[mode].lutDataX, start_params.lutDataX,
+                   start_params.lutSize * sizeof(params[selected_mode].lutDataX[0]));
+            memcpy(params[mode].lutDataY, start_params.lutDataY,
+                   start_params.lutSize * sizeof(params[selected_mode].lutDataY[0]));
         }
 
         if (mode == AccelMode_Linear)
@@ -1146,17 +1146,17 @@ void ResetParameters(void) {
 
         if (mode == AccelMode_CustomCurve) {
             params->customCurve.ApplyCurveConstraints();
-            params[mode].LUT_size = params[mode].customCurve.ExportCurveToLUT(
-                params[mode].LUT_data_x, params[mode].LUT_data_y);
+            params[mode].lutSize = params[mode].customCurve.ExportCurveToLUT(
+                params[mode].lutDataX, params[mode].lutDataY);
             params[mode].customCurve.UpdateLUT();
         }
 
         functions[mode] = CachedFunction(((float) PLOT_X_RANGE) / PLOT_POINTS, &params[mode]);
         //printf("stride = %f\n", functions[mode].x_stride);
-        bool old_use_ani = functions[mode].params->use_anisotropy;
-        functions[mode].params->use_anisotropy = true;
+        bool old_use_ani = functions[mode].params->useAnisotropy;
+        functions[mode].params->useAnisotropy = true;
         functions[mode].PreCacheFunc();
-        functions[mode].params->use_anisotropy = old_use_ani;
+        functions[mode].params->useAnisotropy = old_use_ani;
     }
 }
 
@@ -1186,7 +1186,7 @@ int main() {
     } else {
         // Read driver parameters to a dummy aggregate
         DriverHelper::GetParameterF("Sensitivity", start_params.sens);
-        DriverHelper::GetParameterF("SensitivityY", start_params.sensY);
+        DriverHelper::GetParameterF("SensitivityY", start_params.ratioYX);
         DriverHelper::GetParameterF("OutputCap", start_params.outCap);
         DriverHelper::GetParameterF("InputCap", start_params.inCap);
         DriverHelper::GetParameterF("Offset", start_params.offset);
@@ -1197,18 +1197,18 @@ int main() {
         DriverHelper::GetParameterF("PreScale", start_params.preScale);
         DriverHelper::GetParameterI("AccelerationMode", reinterpret_cast<int &>(start_params.accelMode));
         DriverHelper::GetParameterB("UseSmoothing", start_params.useSmoothing);
-        DriverHelper::GetParameterI("LutSize", start_params.LUT_size);
+        DriverHelper::GetParameterI("LutSize", start_params.lutSize);
         DriverHelper::GetParameterF("RotationAngle", start_params.rotation);
         start_params.rotation /= DEG2RAD;
-        DriverHelper::GetParameterF("AngleSnap_Threshold", start_params.as_threshold);
-        start_params.as_threshold /= DEG2RAD;
-        DriverHelper::GetParameterF("AngleSnap_Angle", start_params.as_angle);
-        start_params.as_angle /= DEG2RAD;
+        DriverHelper::GetParameterF("AngleSnap_Threshold", start_params.asThreshold);
+        start_params.asThreshold /= DEG2RAD;
+        DriverHelper::GetParameterF("AngleSnap_Angle", start_params.asAngle);
+        start_params.asAngle /= DEG2RAD;
         //DriverHelper::GetParameterF("LutStride", start_params.LUT_stride);
         std::string Lut_dataBuf;
         DriverHelper::GetParameterS("LutDataBuf", Lut_dataBuf);
         Lut_dataBuf.copy(LUT_user_data, sizeof(LUT_user_data), 0);
-        DriverHelper::ParseDriverLutData(Lut_dataBuf.c_str(), start_params.LUT_data_x, start_params.LUT_data_y);
+        DriverHelper::ParseDriverLutData(Lut_dataBuf.c_str(), start_params.lutDataX, start_params.lutDataY);
 
         // Load custom curve data
         Lut_dataBuf.clear();
@@ -1224,7 +1224,7 @@ int main() {
             }
         }
 
-        start_params.use_anisotropy = start_params.sensY != start_params.sens;
+        start_params.useAnisotropy = start_params.ratioYX != start_params.sens;
 
         used_mode = start_params.accelMode;
 

@@ -323,9 +323,9 @@ bool Parameters::SaveAll() {
     bool res = true;
 
     // LUT
-    auto encodedLutData = DriverHelper::EncodeLutData(LUT_data_x, LUT_data_y, LUT_size);
+    auto encodedLutData = DriverHelper::EncodeLutData(lutDataX, lutDataY, lutSize);
     if (!encodedLutData.empty() && encodedLutData.size() < MAX_LUT_BUF_LEN) {
-        res &= SetParameterTy("LutSize", LUT_size);
+        res &= SetParameterTy("LutSize", lutSize);
         //res &= SetParameterTy("LutStride", LUT_stride);
         //printf("encoded: %s, size: %zu, stride: %i\n", encoded.c_str(), LUT_size, LUT_stride);
         res &= SetParameterTy("LutDataBuf", encodedLutData);
@@ -342,13 +342,13 @@ bool Parameters::SaveAll() {
 
     // General
     res &= SetParameterTy("Sensitivity", sens);
-    res &= SetParameterTy("SensitivityY", use_anisotropy ? sensY : 1);
+    res &= SetParameterTy("RatioYX", useAnisotropy ? ratioYX : 1);
     res &= SetParameterTy("OutputCap", outCap);
     res &= SetParameterTy("InputCap", inCap);
     res &= SetParameterTy("Offset", offset);
     res &= SetParameterTy("RotationAngle", rotation * DEG2RAD);
-    res &= SetParameterTy("AngleSnap_Threshold", as_threshold * DEG2RAD);
-    res &= SetParameterTy("AngleSnap_Angle", as_angle * DEG2RAD);
+    res &= SetParameterTy("AngleSnap_Threshold", asThreshold * DEG2RAD);
+    res &= SetParameterTy("AngleSnap_Angle", asAngle * DEG2RAD);
 
     // Specific
     res &= SetParameterTy("Acceleration", accel);

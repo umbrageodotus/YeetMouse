@@ -281,16 +281,16 @@ float CachedFunction::EvalFuncAt(float x) const {
         case AccelMode_CustomCurve:
         case AccelMode_Lut: // LUT
         {
-            if (params->LUT_size == 0)
+            if (params->lutSize == 0)
                 break;
 
-            if (x < params->LUT_data_x[0]) {
-                val = params->LUT_data_y[0];
+            if (x < params->lutDataX[0]) {
+                val = params->lutDataY[0];
                 break;
             }
 
             // Binary Search for the closest value smaller than x, so the n+1 value is greater than x
-            int l = 0, r = params->LUT_size - 1;
+            int l = 0, r = params->lutSize - 1;
             // while(l <= r) {
             //     int mid = (r + l) / 2;
             //
@@ -307,11 +307,11 @@ float CachedFunction::EvalFuncAt(float x) const {
             //
             // int best_point = l;
 
-            int best_point = params->LUT_size - 1;
+            int best_point = params->lutSize - 1;
             while (l <= r) {
                 int mid = (r + l) / 2;
 
-                if (x > params->LUT_data_x[mid]) {
+                if (x > params->lutDataX[mid]) {
                     l = mid + 1;
                 } else {
                     best_point = mid;
@@ -319,11 +319,11 @@ float CachedFunction::EvalFuncAt(float x) const {
                 }
             }
 
-            int pos = std::min(best_point - 1, (int) params->LUT_size - 2);
-            float p = params->LUT_data_y[(int) (pos)]; // p element
-            float p1 = params->LUT_data_y[(int) (pos) + 1]; // p + 1 element
+            int pos = std::min(best_point - 1, (int) params->lutSize - 2);
+            float p = params->lutDataY[(int) (pos)]; // p element
+            float p1 = params->lutDataY[(int) (pos) + 1]; // p + 1 element
             // derived from this (lerp): frac * params->LUT_data_x[l + 1] + params->LUT_data_x[l] = x
-            float frac = (x - params->LUT_data_x[pos]) / (params->LUT_data_x[pos + 1] - params->LUT_data_x[pos]);
+            float frac = (x - params->lutDataX[pos]) / (params->lutDataX[pos + 1] - params->lutDataX[pos]);
 
             //printf("frac: %f\n", frac);
 
@@ -407,14 +407,14 @@ void CachedFunction::PreCacheFunc() {
         if (x < 0) {
             // skip offset
             values[i] = EvalFuncAt(FUNC_EVAL_START_VAL);
-            values_y[i] = params->sensY * values[i];
+            values_y[i] = params->ratioYX * values[i];
             x += x_stride;
             continue;
         }
         float val = EvalFuncAt(x);
         values[i] = val; // fabsf(params->outCap) > 0.01 ? fminf(val, params->outCap) : val;
-        if (params->use_anisotropy)
-            values_y[i] = val * params->sensY;
+        if (params->useAnisotropy)
+            values_y[i] = val * params->ratioYX;
         x += x_stride;
     }
 
@@ -434,7 +434,7 @@ bool CachedFunction::ValidateSettings() {
 
     for (int i = 0; i < PLOT_POINTS; i++) {
         if (std::isnan(values[i]) || std::isinf(values[i]) || values[i] > 1e5 || (
-                params->use_anisotropy && (std::isnan(values_y[i]) || std::isinf(values_y[i]) || values_y[i] > 1e5))) {
+                params->useAnisotropy && (std::isnan(values_y[i]) || std::isinf(values_y[i]) || values_y[i] > 1e5))) {
             isValid = false;
             return isValid;
         }
@@ -450,21 +450,21 @@ bool CachedFunction::ValidateSettings() {
         isValid = false;
 
     if (params->accelMode == AccelMode_Lut || params->accelMode == AccelMode_CustomCurve) {
-        if (params->LUT_size <= 1) {
+        if (params->lutSize <= 1) {
             printf("LUT size is not valid!\n");
             isValid = false;
             return isValid;
         }
-        for (int i = 0; i < params->LUT_size; i++) {
-            if (std::isnan(params->LUT_data_x[i]) || std::isnan(params->LUT_data_y[i])) {
+        for (int i = 0; i < params->lutSize; i++) {
+            if (std::isnan(params->lutDataX[i]) || std::isnan(params->lutDataY[i])) {
                 printf("LUT data is not valid!\n");
                 isValid = false;
                 return isValid;
             }
         }
         // Check if is sorted
-        for (int i = 1; i < params->LUT_size; i++) {
-            if (params->LUT_data_x[i-1] > params->LUT_data_x[i]) {
+        for (int i = 1; i < params->lutSize; i++) {
+            if (params->lutDataX[i-1] > params->lutDataX[i]) {
                 printf("LUT is not sorted!\n");
                 isValid = false;
                 return isValid;
